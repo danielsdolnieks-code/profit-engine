@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');const {initial,calculate}=require('./model.js');
+let s=initial(),r=calculate(s);assert.equal(r.profit,2000);assert.equal(r.breakEven,45000);assert.equal(r.safety,5000);
+s.products[0].volume=0;r=calculate(s);assert.equal(r.revenue,0);assert.equal(r.contribution,0);assert.equal(r.fixed,18000);assert.equal(r.profit,-18000);assert.equal(r.breakEven,null);
+s=initial();s.products[0].volume=1100;r=calculate(s);assert.equal(r.fixed,18000);assert.equal(r.profit,4000);assert.equal(r.products[0].totalVariable,33000);
+s=initial();s.products[0].price=45;r=calculate(s);assert.equal(r.profit,-3000);assert.equal(r.products[0].unitContribution,15);
+s=initial();s.common=20000;r=calculate(s);assert.equal(r.breakEven,50000);assert.equal(r.products[0].unitContribution,20);
+s=initial();s.common=32000;s.products[0]={...s.products[0],price:60,volume:1000,variable:30};s.products[1]={...s.products[1],price:40,volume:1000,variable:36};r=calculate(s);assert.equal(r.profit,2000);assert.equal(r.products[1].reported,-12000);s.allocation='revenue';let t=calculate(s);assert.equal(t.profit,r.profit);assert.notEqual(t.products[1].reported,r.products[1].reported);s.products[1].active=false;r=calculate(s);assert.equal(r.profit,-2000);assert.equal(r.fixed,32000);
+s.products[1].fixed=10000;s.products[1].avoidable=25;r=calculate(s);assert.equal(r.products[1].retainedFixed,7500);assert.equal(r.profit,-9500);
+s=initial();s.products[0].price=0;r=calculate(s);assert.equal(r.products[0].ratio,null);assert.equal(r.breakEven,null);assert.equal(r.contribution,-30000);
+console.log('Finance checks passed: baseline, zero volume, increased volume, price cut, fixed costs, allocation, dropping a product, partial avoidability, zero revenue.');
